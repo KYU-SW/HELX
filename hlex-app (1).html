@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>알아챔 by HLEX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EEF2EC;
+    --frame: #1C2420;
+    --surface: #FFFFFF;
+    --surface-soft: #E4EBE3;
+    --line: #D9E1D6;
+    --ink: #22291F;
+    --ink-soft: #63705F;
+    --sage: #3F6F5C;
+    --sage-deep: #2A5245;
+    --sage-pale: #DCE9DF;
+    --clay: #C77B62;
+    --clay-pale: #F3DCD2;
+    --amber: #C99A3E;
+    --radius-l: 28px;
+    --radius-m: 18px;
+    --radius-s: 12px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--bg);
+    font-family:'Noto Sans KR', sans-serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    min-height:100vh;
+    padding:28px 12px 60px;
+  }
+  .device{
+    width:390px;
+    max-width:100%;
+    background: var(--frame);
+    border-radius:46px;
+    padding:14px;
+    box-shadow: 0 30px 60px -20px rgba(28,36,32,0.45);
+  }
+  .screen{
+    background: var(--bg);
+    border-radius:34px;
+    height:790px;
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+  .statusbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:16px 26px 4px;
+    font-size:13px;
+    color: var(--ink-soft);
+    font-weight:600;
+    flex-shrink:0;
+  }
+  .content{
+    flex:1;
+    overflow-y:auto;
+    padding:6px 22px 24px;
+  }
+  .content::-webkit-scrollbar{width:0;}
+  h1,h2,h3{
+    font-family:'Gowun Batang', serif;
+    font-weight:700;
+    margin:0;
+    color:var(--ink);
+    line-height:1.32;
+  }
+  p{margin:0;line-height:1.6;}
+  .eyebrow-free{margin-top:2px;}
+  .lede{
+    font-size:14.5px;
+    color:var(--ink-soft);
+    margin-top:8px;
+    line-height:1.6;
+  }
+  .stack{display:flex;flex-direction:column;}
+  .gap-8{gap:8px;} .gap-10{gap:10px;} .gap-12{gap:12px;} .gap-16{gap:16px;} .gap-20{gap:20px;} .gap-24{gap:24px;}
+  .row{display:flex;flex-wrap:wrap;}
+  .chip{
+    border:1px solid var(--line);
+    background: var(--surface);
+    border-radius:999px;
+    padding:10px 16px;
+    font-size:14px;
+    font-weight:500;
+    color: var(--ink);
+    cursor:pointer;
+    transition:all .15s ease;
+    user-select:none;
+  }
+  .chip:hover{border-color:var(--sage);}
+  .chip.selected{
+    background: var(--sage);
+    border-color:var(--sage);
+    color:#fff;
+  }
+  .chip.block{width:100%;text-align:left;border-radius:var(--radius-m);padding:14px 16px;}
+  .card{
+    background: var(--surface);
+    border:1px solid var(--line);
+    border-radius: var(--radius-m);
+    padding:16px 18px;
+  }
+  .card-soft{
+    background: var(--surface-soft);
+    border-radius: var(--radius-m);
+    padding:16px 18px;
+  }
+  .btn{
+    border:none;
+    border-radius:999px;
+    padding:15px 22px;
+    font-family:'Noto Sans KR', sans-serif;
+    font-size:15.5px;
+    font-weight:600;
+    cursor:pointer;
+    width:100%;
+    transition: transform .12s ease, opacity .12s ease;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--sage); color:#fff;}
+  .btn-primary:disabled{background:#AEC0AC;cursor:not-allowed;}
+  .btn-ghost{background:transparent; color:var(--sage-deep); border:1px solid var(--line);}
+  .btn-text{background:transparent;color:var(--ink-soft); font-weight:500; padding:10px;}
+  .btn-clay{background:var(--clay); color:#fff;}
+  .topnav{
+    display:flex; align-items:center; gap:10px;
+    padding: 8px 0 10px;
+  }
+  .backbtn{
+    width:34px;height:34px;border-radius:50%;
+    background:var(--surface); border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer; flex-shrink:0; font-size:16px; color:var(--ink-soft);
+  }
+  .stepdots{display:flex; gap:6px; margin:2px 0 18px;}
+  .stepdots span{width:22px;height:4px;border-radius:2px;background:var(--line);}
+  .stepdots span.on{background:var(--sage);}
+  .bottomnav{
+    display:flex;
+    border-top:1px solid var(--line);
+    background: var(--surface);
+    flex-shrink:0;
+  }
+  .navitem{
+    flex:1; text-align:center; padding:12px 0 16px; cursor:pointer;
+    color: var(--ink-soft); font-size:12px; font-weight:600;
+  }
+  .navitem .navicon{font-size:20px; display:block; margin-bottom:2px;}
+  .navitem.active{color:var(--sage-deep);}
+  .hero-btn-wrap{
+    display:flex; flex-direction:column; align-items:center; margin: 18px 0 6px;
+  }
+  .hero-btn{
+    width:172px; height:172px; border-radius:50%;
+    background: radial-gradient(circle at 32% 28%, #4d8a72, var(--sage-deep));
+    color:#fff; border:none; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-family:'Gowun Batang', serif; font-size:17px; font-weight:700;
+    box-shadow: 0 18px 30px -12px rgba(42,82,69,0.55);
+    text-align:center; line-height:1.4; padding:10px;
+    transition: transform .12s ease;
+  }
+  .hero-btn:active{transform:scale(0.96);}
+  .hero-sub{font-size:12px; font-weight:400; opacity:0.85; margin-top:4px; font-family:'Noto Sans KR',sans-serif;}
+  .statgrid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .statnum{font-family:'Gowun Batang',serif; font-size:28px; color:var(--sage-deep);}
+  .statlabel{font-size:12.5px; color:var(--ink-soft); margin-top:2px;}
+  .intensity-row{display:flex; gap:8px; justify-content:space-between;}
+  .intbtn{
+    flex:1; aspect-ratio:1/1; border-radius:14px; border:1px solid var(--line);
+    background:var(--surface); font-weight:700; font-size:15px; cursor:pointer; color:var(--ink);
+  }
+  .intbtn.selected{ background:var(--clay); border-color:var(--clay); color:#fff;}
+  .scale-labels{display:flex; justify-content:space-between; font-size:11px; color:var(--ink-soft); margin-top:6px;}
+  .divider{height:1px; background:var(--line); margin: 18px 0;}
+  .footer-fixed{
+    padding:14px 22px 20px; flex-shrink:0; background:linear-gradient(180deg, rgba(238,242,236,0), var(--bg) 40%);
+  }
+  .badge{
+    display:inline-block; background:var(--sage-pale); color:var(--sage-deep);
+    font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px;
+  }
+  .quotebar{
+    border-left:3px solid var(--sage); padding-left:12px; font-size:13.5px; color:var(--ink-soft); line-height:1.6;
+  }
+  .timerwrap{display:flex; flex-direction:column; align-items:center; margin:36px 0;}
+  .timercircle{
+    width:200px;height:200px;border-radius:50%;
+    border:10px solid var(--sage-pale);
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    position:relative;
+  }
+  .timernum{font-family:'Gowun Batang',serif; font-size:44px; color:var(--sage-deep);}
+  .list-row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:10px 0; border-bottom:1px solid var(--line);
+  }
+  .list-row:last-child{border-bottom:none;}
+  .list-row .k{font-size:13.5px; color:var(--ink-soft);}
+  .list-row .v{font-size:14px; font-weight:600; text-align:right; max-width:60%;}
+  .toast{
+    position:absolute; bottom:90px; left:50%; transform:translateX(-50%);
+    background: var(--ink); color:#fff; padding:10px 18px; border-radius:999px;
+    font-size:13px; opacity:0; transition:opacity .25s ease; pointer-events:none; z-index:20;
+  }
+  .toast.show{opacity:1;}
+  .privacy-link{font-size:12.5px; color:var(--sage-deep); text-decoration:underline; cursor:pointer; background:none; border:none; padding:0; font-family:'Noto Sans KR',sans-serif;}
+  .modal-overlay{
+    position:absolute; inset:0; background:rgba(20,26,20,0.5);
+    display:flex; align-items:flex-end; z-index:30;
+  }
+  .modal-sheet{
+    background:var(--surface); width:100%; border-radius:24px 24px 0 0;
+    padding:24px 22px 26px; max-height:80%; overflow-y:auto;
+  }
+</style>
+</head>
+<body>
+<div class="device">
+  <div class="screen" id="screen">
+    <div class="statusbar"><span>9:41</span><span>알아챔</span></div>
+    <div class="content" id="content"></div>
+    <div id="toast" class="toast"></div>
+  </div>
+</div>
+
+<script>
+/* ---------------------------- DATA LAYER ---------------------------- */
+const STORAGE_KEY = 'hlex-data-v1';
+const DEFAULT_DATA = () => ({
+  onboarded: false,
+  behaviors: [],
+  primaryBehavior: '',
+  situations: [],
+  goal: '',
+  records: [],
+  experiments: [],
+  preventionSessions: []
+});
+
+let DATA = null;
+
+async function loadData(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    DATA = res && res.value ? JSON.parse(res.value) : DEFAULT_DATA();
+  }catch(e){
+    DATA = DEFAULT_DATA();
+  }
+}
+async function saveData(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(DATA), false);
+  }catch(e){ console.error('save failed', e); }
+}
+
+/* ---------------------------- CONTENT MAPS ---------------------------- */
+const BEHAVIORS = ['손톱 물어뜯기','손톱 주변 피부 뜯기','입술 뜯기','피부 뜯기','머리카락 만지기 또는 뽑기','기타 반복행동'];
+const SITUATIONS = ['공부하거나 과제할 때','시험이나 발표 전','스마트폰을 볼 때','영상을 볼 때','잠들기 전','이동 중','혼자 있을 때','사람과 대화할 때','잘 모르겠음'];
+const GOALS = [
+  '일주일 동안 행동 패턴 3개 발견하기',
+  '하루 한 번 행동을 알아차리기',
+  '대체 행동을 일주일에 5번 시도하기',
+  '행동 충동이 생겼을 때 10초 멈추기',
+  '나에게 효과적인 대체 행동 2개 찾기'
+];
+const ACTIVITIES = ['공부','스마트폰','영상 시청','대화','휴식','이동','취침 준비'];
+const FEELINGS = ['불안','스트레스','지루함','피곤함','집중','건조함 또는 거친 촉감','무의식적','잘 모르겠음'];
+
+const METHODS = {
+  '건조함 또는 거친 촉감': [
+    {name:'립밤 바르고 물 한 모금 마시기', desc:'입술이 건조하면 충동이 더 강해져요. 손을 대는 대신 립밤과 물로 먼저 달래주세요.', dur:60},
+    {name:'손톱 파일로 거친 부분 정리하기', desc:'신경 쓰이는 거친 부분을 안전하게 다듬어보세요.', dur:60}
+  ],
+  '불안': [
+    {name:'양손 맞잡고 세 번 호흡하기', desc:'양손을 가볍게 맞잡고 천천히 세 번 숨을 들이쉬고 내쉬어보세요.', dur:45},
+    {name:'짧은 호흡 4-4-4', desc:'4초 들이쉬고, 4초 멈추고, 4초 내쉬는 것을 세 번 반복해보세요.', dur:45}
+  ],
+  '스트레스': [
+    {name:'양손 맞잡고 세 번 호흡하기', desc:'양손을 가볍게 맞잡고 천천히 세 번 숨을 들이쉬고 내쉬어보세요.', dur:45},
+    {name:'어깨 힘 풀고 목 스트레칭', desc:'어깨를 크게 한 번 들어올렸다가 툭 내려놓아보세요.', dur:30}
+  ],
+  '지루함': [
+    {name:'피젯이나 작은 물건 만지기', desc:'손에 펜이나 클립 같은 작은 물건을 쥐고 30초 동안 다른 감각에 집중해보세요.', dur:30},
+    {name:'손가락 운동 5회', desc:'손가락을 하나씩 펴고 접기를 다섯 번 반복해보세요.', dur:30}
+  ],
+  '피곤함': [
+    {name:'물 마시고 잠시 눈 감기', desc:'물을 한 모금 마시고 30초 동안 눈을 감고 쉬어보세요.', dur:30},
+    {name:'가벼운 스트레칭', desc:'목과 손목을 가볍게 스트레칭해보세요.', dur:30}
+  ],
+  '집중': [
+    {name:'손에 펜이나 작은 물체 쥐기', desc:'집중할 때 손이 심심하지 않도록 펜이나 작은 물체를 쥐어보세요.', dur:30},
+    {name:'피젯 사용하기', desc:'피젯을 만지며 집중을 이어가보세요.', dur:30}
+  ],
+  '무의식적': [
+    {name:'손에 물건 쥐고 감각 전환하기', desc:'손에 펜이나 작은 물건을 쥐고 30초 동안 다른 감각에 집중해보세요.', dur:30},
+    {name:'10초 멈추기', desc:'지금 하려던 행동을 10초만 멈추고 손을 무릎 위에 두어보세요.', dur:10}
+  ],
+  '잘 모르겠음': [
+    {name:'손에 물건 쥐고 감각 전환하기', desc:'손에 펜이나 작은 물건을 쥐고 30초 동안 다른 감각에 집중해보세요.', dur:30},
+    {name:'물 마시기', desc:'물을 한 모금 마시고 지금 상태를 잠시 살펴보세요.', dur:20}
+  ]
+};
+
+/* ---------------------------- ROUTER ---------------------------- */
+let ROUTE = 'loading';
+let FLOW = {}; // transient state for in-progress record/experiment
+let TIMER_HANDLE = null;
+
+function go(route, extra){
+  if(TIMER_HANDLE){ clearInterval(TIMER_HANDLE); TIMER_HANDLE=null; }
+  ROUTE = route;
+  if(extra) Object.assign(FLOW, extra);
+  render();
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+/* ---------------------------- HELPERS ---------------------------- */
+const INTENSITY_COLORS = {1:'#4C8F5E', 2:'#8DA84A', 3:'#D1A93C', 4:'#D97F44', 5:'#C0503F'};
+function intensityBtnStyle(n, selected){
+  if(!selected) return '';
+  return `style="background:${INTENSITY_COLORS[n]};border-color:${INTENSITY_COLORS[n]};color:#fff;"`;
+}
+function fmtTime(ts){
+  const d = new Date(ts);
+  const h = d.getHours();
+  const ampm = h < 12 ? '오전' : '오후';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${ampm} ${h12}시`;
+}
+function todayCount(list){
+  const today = new Date(); today.setHours(0,0,0,0);
+  return list.filter(r => r.ts >= today.getTime()).length;
+}
+function mostFrequent(arr){
+  if(!arr.length) return null;
+  const counts = {};
+  arr.forEach(v => counts[v] = (counts[v]||0)+1);
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+}
+function hourBucketLabel(records){
+  if(!records.length) return null;
+  const hours = records.map(r => new Date(r.ts).getHours());
+  const counts = {};
+  hours.forEach(h => counts[h] = (counts[h]||0)+1);
+  const topHour = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0];
+  const h = parseInt(topHour,10);
+  const ampm = h < 12 ? '오전' : '오후';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${ampm} ${h12}시경`;
+}
+function bestMethod(experiments){
+  if(!experiments.length) return null;
+  const byMethod = {};
+  experiments.forEach(e => {
+    if(!byMethod[e.method]) byMethod[e.method] = {sum:0,count:0};
+    byMethod[e.method].sum += (e.before - e.after);
+    byMethod[e.method].count += 1;
+  });
+  const entries = Object.entries(byMethod).map(([m,v]) => ({method:m, avg: v.sum/v.count, count:v.count}));
+  entries.sort((a,b)=>b.avg-a.avg);
+  return entries[0];
+}
+function bestMethodForFeeling(experiments, feeling){
+  const filtered = experiments.filter(e=>e.feeling===feeling);
+  return bestMethod(filtered);
+}
+function suggestMethod(feeling){
+  const pool = METHODS[feeling] || METHODS['잘 모르겠음'];
+  const past = bestMethodForFeeling(DATA.experiments, feeling);
+  if(past){
+    const match = pool.find(m=>m.name===past.method);
+    if(match) return match;
+  }
+  return pool[0];
+}
+
+/* ---------------------------- RENDER ---------------------------- */
+function render(){
+  const c = document.getElementById('content');
+  let html = '';
+  switch(ROUTE){
+    case 'loading': html = renderLoading(); break;
+    case 'onboard-intro': html = renderOnboardIntro(); break;
+    case 'onboard-behavior': html = renderOnboardBehavior(); break;
+    case 'onboard-situation': html = renderOnboardSituation(); break;
+    case 'onboard-goal': html = renderOnboardGoal(); break;
+    case 'home': html = renderHome(); break;
+    case 'record-behavior': html = renderRecordBehavior(); break;
+    case 'record-detail': html = renderRecordDetail(); break;
+    case 'coach': html = renderCoach(); break;
+    case 'experiment-before': html = renderExperimentBefore(); break;
+    case 'experiment-active': html = renderExperimentActive(); break;
+    case 'experiment-after': html = renderExperimentAfter(); break;
+    case 'experiment-feedback': html = renderExperimentFeedback(); break;
+    case 'map': html = renderMap(); break;
+    case 'prevention-setup': html = renderPreventionSetup(); break;
+    case 'prevention-active': html = renderPreventionActive(); break;
+    case 'prevention-checkin': html = renderPreventionCheckin(); break;
+    case 'settings': html = renderSettings(); break;
+    default: html = renderHome();
+  }
+  c.innerHTML = html;
+  if(ROUTE === 'experiment-active') startExperimentTimer();
+  if(ROUTE === 'prevention-active') startPreventionTimer();
+  window._privacyModal && (window._privacyModal = window._privacyModal); // noop keep
+  c.scrollTop = 0;
+}
+
+function withBottomNav(inner, active){
+  return inner + `
+  </div><div class="bottomnav">
+    <div class="navitem ${active==='home'?'active':''}" onclick="go('home')"><span class="navicon">◍</span>홈</div>
+    <div class="navitem ${active==='map'?'active':''}" onclick="go('map')"><span class="navicon">◈</span>지도</div>
+    <div class="navitem ${active==='settings'?'active':''}" onclick="go('settings')"><span class="navicon">⚙</span>설정</div>
+  </div><div style="display:none">`;
+}
+
+/* ---- LOADING ---- */
+function renderLoading(){
+  return `<div style="height:600px;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);font-size:14px;">불러오는 중…</div>`;
+}
+
+/* ---- ONBOARDING ---- */
+function renderOnboardIntro(){
+  return `
+  <div style="padding-top:60px; text-align:center;">
+    <div style="font-size:44px;">🌿</div>
+    <h1 style="font-size:26px; margin-top:18px;">알아챔</h1>
+    <p class="lede" style="margin-top:10px;">건강한 변화는<br>알아차림에서 시작됩니다.</p>
+  </div>
+  <div class="card-soft" style="margin-top:40px;">
+    <p style="font-size:13.5px; color:var(--ink-soft); line-height:1.7;">
+    손톱 물어뜯기, 입술 뜯기, 피부 뜯기 같은 무의식적 반복행동을 기록하고,
+    나에게 가장 효과적인 대체 행동을 함께 찾아가는 앱이에요.
+    </p>
+  </div>
+  <div style="margin-top:26px;">
+    <button class="privacy-link" onclick="showPrivacyModal()">개인정보 처리 안내 보기</button>
+  </div>
+  <div style="height:120px;"></div>
+  <div class="footer-fixed" style="position:absolute; bottom:0; left:0; right:0;">
+    <button class="btn btn-primary" onclick="go('onboard-behavior')">시작하기</button>
+  </div>
+  `;
+}
+
+function renderOnboardBehavior(){
+  const sel = FLOW.ob_behaviors || [];
+  return `
+  <div class="topnav">
+    <div class="backbtn" onclick="go('onboard-intro')">‹</div>
+  </div>
+  <div class="stepdots"><span class="on"></span><span></span><span></span></div>
+  <h2 style="font-size:21px;">어떤 행동을<br>줄이고 싶으신가요?</h2>
+  <p class="lede">여러 개를 고를 수 있어요. 잠시 후 그중 하나를 대표 행동으로 정할게요.</p>
+  <div class="row gap-10" style="margin-top:20px;">
+    ${BEHAVIORS.map(b => `<div class="chip ${sel.includes(b)?'selected':''}" onclick="toggleOb('ob_behaviors','${escAttr(b)}')">${b}</div>`).join('')}
+  </div>
+  <div style="height:100px;"></div>
+  <div class="footer-fixed" style="position:absolute; bottom:0; left:0; right:0;">
+    <button class="btn btn-primary" ${sel.length? '' : 'disabled'} onclick="proceedBehaviorStep()">다음</button>
+  </div>
+  `;
+}
+
+function proceedBehaviorStep(){
+  FLOW.ob_primary = (FLOW.ob_behaviors||[])[0];
+  go('onboard-situation');
+}
+
+function renderOnboardSituation(){
+  const sel = FLOW.ob_situations || [];
+  return `
+  <div class="topnav"><div class="backbtn" onclick="go('onboard-behavior')">‹</div></div>
+  <div class="stepdots"><span class="on"></span><span class="on"></span><span></span></div>
+  <h2 style="font-size:21px;">주로 언제<br>이 행동이 나타나나요?</h2>
+  <p class="lede">정확히 몰라도 괜찮아요. 기억나는 대로 골라주세요.</p>
+  <div class="row gap-10" style="margin-top:20px;">
+    ${SITUATIONS.map(s => `<div class="chip ${sel.includes(s)?'selected':''}" onclick="toggleOb('ob_situations','${escAttr(s)}')">${s}</div>`).join('')}
+  </div>
+  <div style="height:100px;"></div>
+  <div class="footer-fixed" style="position:absolute; bottom:0; left:0; right:0;">
+    <button class="btn btn-primary" ${sel.length? '' : 'disabled'} onclick="go('onboard-goal')">다음</button>
+  </div>
+  `;
+}
+
+function renderOnboardGoal(){
+  const sel = FLOW.ob_goal;
+  return `
+  <div class="topnav"><div class="backbtn" onclick="go('onboard-situation')">‹</div></div>
+  <div class="stepdots"><span class="on"></span><span class="on"></span><span class="on"></span></div>
+  <h2 style="font-size:21px;">이번 주 목표를<br>정해볼까요?</h2>
+  <p class="lede">완전히 멈추는 것보다, 알아차리고 시도하는 것을 목표로 삼아요.</p>
+  <div class="stack gap-10" style="margin-top:20px;">
+    ${GOALS.map(g => `<div class="chip block ${sel===g?'selected':''}" onclick="setObGoal('${escAttr(g)}')">${g}</div>`).join('')}
+  </div>
+  <div style="height:100px;"></div>
+  <div class="footer-fixed" style="position:absolute; bottom:0; left:0; right:0;">
+    <button class="btn btn-primary" ${sel? '' : 'disabled'} onclick="finishOnboarding()">시작하기</button>
+  </div>
+  `;
+}
+
+function toggleOb(key, val){
+  const arr = FLOW[key] || [];
+  const i = arr.indexOf(val);
+  if(i>=0) arr.splice(i,1); else arr.push(val);
+  FLOW[key] = arr;
+  render();
+}
+function setObGoal(g){ FLOW.ob_goal = g; render(); }
+function escAttr(s){ return s.replace(/'/g, "\\'"); }
+
+async function finishOnboarding(){
+  DATA.behaviors = FLOW.ob_behaviors || [];
+  DATA.primaryBehavior = FLOW.ob_primary || DATA.behaviors[0] || '기타 반복행동';
+  DATA.situations = FLOW.ob_situations || [];
+  DATA.goal = FLOW.ob_goal;
+  DATA.onboarded = true;
+  await saveData();
+  FLOW = {};
+  go('home');
+}
+
+/* ---- HOME ---- */
+function renderHome(){
+  const recToday = todayCount(DATA.records);
+  const expToday = todayCount(DATA.experiments);
+  return withBottomNav(`
+  <h2 style="font-size:19px; margin-top:6px;">오늘도 나를<br>알아가는 중이에요</h2>
+  <div class="statgrid" style="margin-top:16px;">
+    <div class="card"><div class="statnum">${recToday}</div><div class="statlabel">오늘 알아차림</div></div>
+    <div class="card"><div class="statnum">${expToday}</div><div class="statlabel">대체 행동 시도</div></div>
+  </div>
+
+  <div class="hero-btn-wrap">
+    <button class="hero-btn" onclick="startRecord()">
+      지금 행동을<br>알아차렸어요
+      <span class="hero-sub">눌러서 바로 기록</span>
+    </button>
+  </div>
+
+  <div class="card-soft" style="margin-top:8px;">
+    <p style="font-size:13.5px; font-weight:600;">이번 주 목표</p>
+    <p style="font-size:13px; color:var(--ink-soft); margin-top:4px;">${DATA.goal || '목표를 아직 설정하지 않았어요'}</p>
+  </div>
+
+  <div class="card" style="margin-top:14px;">
+    <p style="font-size:14px; font-weight:600;">오늘 밤 과제할 예정인가요?</p>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:4px;">평소 자주 나타나는 시간대라면, 미리 준비해볼 수 있어요.</p>
+    <div style="margin-top:12px;">
+      <button class="btn btn-ghost" onclick="go('prevention-setup')">예방 모드 시작하기</button>
+    </div>
+  </div>
+  `, 'home');
+}
+
+function startRecord(){
+  FLOW = { record: { ts: Date.now(), behavior:'', activity:'', feeling:'', intensity: null } };
+  go('record-behavior');
+}
+
+/* ---- RECORD FLOW ---- */
+function renderRecordBehavior(){
+  const r = FLOW.record;
+  const opts = ['손톱','입술','피부','기타'];
+  return `
+  <div class="topnav"><div class="backbtn" onclick="go('home')">‹</div></div>
+  <h2 style="font-size:19px;">어떤 행동을<br>알아차렸나요?</h2>
+  <div class="row gap-10" style="margin-top:18px;">
+    ${opts.map(o => `<div class="chip" onclick="pickBehavior('${o}')">${o}</div>`).join('')}
+  </div>
+  <p style="font-size:12px; color:var(--ink-soft); margin-top:22px;">선택하면 바로 저장돼요. 나머지 정보는 원하실 때만 더해주세요.</p>
+  `;
+}
+
+function pickBehavior(label){
+  const map = {'손톱':'손톱 물어뜯기','입술':'입술 뜯기','피부':'피부 뜯기','기타':'기타 반복행동'};
+  FLOW.record.behavior = map[label] || label;
+  const rec = Object.assign({id: 'r'+Date.now(), createdAt: Date.now()}, FLOW.record);
+  DATA.records.push(rec);
+  saveData();
+  FLOW.currentRecordId = rec.id;
+  showToast('기록했어요');
+  go('record-detail');
+}
+
+function renderRecordDetail(){
+  const r = FLOW.record;
+  return `
+  <div class="topnav"><div class="backbtn" onclick="skipToCoach()">‹</div></div>
+  <div class="badge">기록 완료</div>
+  <h2 style="font-size:19px; margin-top:10px;">조금 더 알려주실 수 있나요?</h2>
+  <p class="lede">건너뛰어도 괜찮아요.</p>
+
+  <p style="font-size:13.5px; font-weight:600; margin-top:22px;">무엇을 하고 있었나요?</p>
+  <div class="row gap-10" style="margin-top:10px;">
+    ${ACTIVITIES.map(a => `<div class="chip ${r.activity===a?'selected':''}" onclick="setRecordField('activity','${escAttr(a)}')">${a}</div>`).join('')}
+  </div>
+
+  <p style="font-size:13.5px; font-weight:600; margin-top:22px;">어떤 느낌에 가까웠나요?</p>
+  <div class="row gap-10" style="margin-top:10px;">
+    ${FEELINGS.map(f => `<div class="chip ${r.feeling===f?'selected':''}" onclick="setRecordField('feeling','${escAttr(f)}')">${f}</div>`).join('')}
+  </div>
+
+  <p style="font-size:13.5px; font-weight:600; margin-top:22px;">충동의 강도는 어느 정도였나요?</p>
+  <div class="intensity-row" style="margin-top:10px;">
+    ${[1,2,3,4,5].map(n => `<div class="intbtn ${r.intensity===n?'selected':''}" ${intensityBtnStyle(n, r.intensity===n)} onclick="setRecordField('intensity',${n})">${n}</div>`).join('')}
+  </div>
+  <div class="scale-labels"><span>매우 약함</span><span>매우 강함</span></div>
+
+  <div style="height:90px;"></div>
+  <div class="footer-fixed" style="position:absolute; bottom:0; left:0; right:0;">
+    <button class="btn btn-primary" onclick="saveDetailAndCoach()">다음</button>
+    <button class="btn btn-text" onclick="skipToCoach()">건너뛰기</button>
+  </div>
+  `;
+}
+
+function setRecordField(field, value){
+  FLOW.record[field] = value;
+  const idx = DATA.records.findIndex(r=>r.id===FLOW.currentRecordId);
+  if(idx>=0) DATA.records[idx][field] = value;
+  saveData();
+  render();
+}
+
+function saveDetailAndCoach(){ go('coach'); }
+function skipToCoach(){ go('coach'); }
+
+/* ---- COACH ---- */
+function renderCoach(){
+  const feeling = FLOW.record.feeling || '잘 모르겠음';
+  const method = suggestMethod(feeling);
+  FLOW.method = method;
+  return `
+  <div class="topnav"><div class="backbtn" onclick="go('home')">‹</div></div>
+  <p style="font-size:13px; color:var(--ink-soft);">방금 행동을 시작한 가장 가까운 이유는</p>
+  <h2 style="font-size:20px; margin-top:4px;">"${feeling}"</h2>
+  <div class="divider"></div>
+  <div class="card">
+    <p style="font-size:13px; color:var(--ink-soft);">지금 시도해볼 대체 행동</p>
+    <h3 style="font-size:18px; margin-top:6px;">${method.name}</h3>
+    <p class="lede" style="margin-top:10px;">${method.desc}</p>
+  </div>
+  <div style="height:110px;"></div>
+  <div class="footer-fixed" style="position:absolute; bottom:0; left:0; right:0;">
+    <button class="btn btn-primary" onclick="go('experiment-before')">${method.dur}초 실험 시작</button>
+    <button class="btn btn-text" onclick="showOtherMethods()">다른 방법 선택하기</button>
+  </div>
+  `;
+}
+
+function showOtherMethods(){
+  const feeling = FLOW.record.feeling || '잘 모르겠음';
+  const pool = METHODS[feeling] || METHODS['잘 모르겠음'];
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e)=>{ if(e.target===overlay) overlay.remove(); };
+  overlay.innerHTML = `
+    <div class="modal-sheet">
+      <h3 style="font-size:17px;">다른 방법 선택하기</h3>
+      <div class="stack gap-10" style="margin-top:16px;">
+        ${pool.map((m,i)=>`
+          <div class="chip block" onclick="chooseMethod(${i})">
+            <div style="font-weight:600;">${m.name}</div>
+            <div style="font-size:12px; color:var(--ink-soft); margin-top:3px;">${m.desc}</div>
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-text" style="margin-top:14px;" onclick="this.closest('.modal-overlay').remove()">닫기</button>
+    </div>`;
+  document.getElementById('screen').appendChild(overlay);
+  window._otherPool = pool;
+}
+function chooseMethod(i){
+  FLOW.method = window._otherPool[i];
+  document.querySelector('.modal-overlay')?.remove();
+  go('experiment-before');
+}
+
+/* ---- EXPERIMENT ---- */
+function renderExperimentBefore(){
+  return `
+  <div class="topnav"><div class="backbtn" onclick="go('coach')">‹</div></div>
+  <h2 style="font-size:19px;">지금 충동은<br>어느 정도인가요?</h2>
+  <p class="lede">실험을 시작하기 전, 지금 상태를 먼저 기록할게요.</p>
+  <div class="intensity-row" style="margin-top:26px;">
+    ${[1,2,3,4,5].map(n => `<div class="intbtn ${FLOW.before===n?'selected':''}" ${intensityBtnStyle(n, FLOW.before===n)} onclick="setBefore(${n})">${n}</div>`).join('')}
+  </div>
+  <div class="scale-labels"><span>매우 약함</span><span>매우 강함</span></div>
+  <div style="height:90px;"></div>
+  <div class="footer-fixed" style="position:absolute; bottom:0; left:0; right:0;">
+    <button class="btn btn-primary" ${FLOW.before?'':'disabled'} onclick="go('experiment-active')">${FLOW.method.name}</button>
+  </div>
+  `;
+}
+function setBefore(n){ FLOW.before = n; render(); }
+
+function renderExperimentActive(){
+  const m = FLOW.method;
+  return `
+  <div style="padding-top:10px; text-align:center;">
+    <p style="font-size:13px; color:var(--ink-soft);">지금 시도해보세요</p>
+    <h2 style="font-size:19px; margin-top:6px;">${m.name}</h2>
+  </div>
+  <div class="timerwrap">
+    <div class="timercircle">
+      <div class="timernum" id="timernum">${m.dur}</div>
+      <div style="font-size:12px; color:var(--ink-soft);">초 남음</div>
+    </div>
+  </div>
+  <div class="quotebar">${m.desc}</div>
+  <div style="height:70px;"></div>
+  <div class="footer-fixed" style="position:absolute; bottom:0; left:0; right:0;">
+    <button class="btn btn-text" onclick="go('experiment-after')">지금 끝내기</button>
+  </div>
+  `;
+}
+function startExperimentTimer(){
+  let remaining = FLOW.method.dur;
+  const el = () => document.getElementById('timernum');
+  TIMER_HANDLE = setInterval(()=>{
+    remaining -= 1;
+    if(el()) el().textContent = Math.max(remaining,0);
+    if(remaining<=0){
+      clearInterval(TIMER_HANDLE);
+      go('experiment-after');
+    }
+  },1000);
+}
+
+function renderExperimentAfter(){
+  return `
+  <h2 style="font-size:19px;">지금 충동은<br>어느 정도인가요?</h2>
+  <p class="lede">실험 직후 상태를 기록해주세요.</p>
+  <div class="intensity-row" style="margin-top:26px;">
+    ${[1,2,3,4,5].map(n => `<div class="intbtn ${FLOW.after===n?'selected':''}" ${intensityBtnStyle(n, FLOW.after===n)} onclick="setAfter(${n})">${n}</div>`).join('')}
+  </div>
+  <div class="scale-labels"><span>매우 약함</span><span>매우 강함</span></div>
+  <div style="height:90px;"></div>
+  <div class="footer-fixed" style="position:absolute; bottom:0; left:0; right:0;">
+    <button class="btn btn-primary" ${FLOW.after?'':'disabled'} onclick="go('experiment-feedback')">결과 보기</button>
+  </div>
+  `;
+}
+function setAfter(n){ FLOW.after = n; render(); }
+
+function renderExperimentFeedback(){
+  const diff = FLOW.before - FLOW.after;
+  let msg, tone;
+  if(diff > 0){ msg = `이번 실험에서 충동이 ${FLOW.before}에서 ${FLOW.after}로 줄어들었어요.`; tone='좋아요'; }
+  else if(diff === 0){ msg = `이번에는 충동에 큰 변화가 없었어요. 다른 상황에서 다시 시도해볼 수 있어요.`; tone='기록 완료'; }
+  else { msg = `이번에는 충동이 오히려 조금 늘었어요. 다른 방법도 함께 시도해볼까요?`; tone='기록 완료'; }
+  return `
+  <div style="text-align:center; padding-top:10px;">
+    <div class="badge">${tone}</div>
+  </div>
+  <div class="card" style="margin-top:16px;">
+    <div class="row" style="justify-content:space-between;">
+      <div><p style="font-size:12px;color:var(--ink-soft);">실험 전</p><p class="statnum">${FLOW.before}</p></div>
+      <div style="align-self:center; color:var(--ink-soft);">→</div>
+      <div><p style="font-size:12px;color:var(--ink-soft);">실험 후</p><p class="statnum">${FLOW.after}</p></div>
+    </div>
+  </div>
+  <p class="lede" style="margin-top:16px; font-size:14.5px; color:var(--ink);">${msg}</p>
+
+  <p style="font-size:13px; color:var(--ink-soft); margin-top:22px;">이 방법이 도움이 됐나요?</p>
+  <div class="stack gap-10" style="margin-top:10px;">
+    <div class="chip block" onclick="finishExperiment('도움됨')">도움이 됐어요</div>
+    <div class="chip block" onclick="finishExperiment('잘모름')">잘 모르겠어요</div>
+    <div class="chip block" onclick="finishExperiment('도움안됨')">도움이 안 됐어요</div>
+  </div>
+  `;
+}
+
+async function finishExperiment(feedback){
+  const exp = {
+    id: 'e'+Date.now(),
+    ts: Date.now(),
+    behavior: FLOW.record.behavior,
+    feeling: FLOW.record.feeling || '잘 모르겠음',
+    method: FLOW.method.name,
+    before: FLOW.before,
+    after: FLOW.after,
+    feedback
+  };
+  DATA.experiments.push(exp);
+  await saveData();
+  showToast('실험 결과를 저장했어요');
+  FLOW = {};
+  go('home');
+}
+
+/* ---- MAP / STATS ---- */
+function renderMap(){
+  const hasData = DATA.records.length > 0;
+  const timeLabel = hourBucketLabel(DATA.records);
+  const topSituation = mostFrequent(DATA.records.map(r=>r.activity).filter(Boolean));
+  const topFeeling = mostFrequent(DATA.records.map(r=>r.feeling).filter(Boolean));
+  const best = bestMethod(DATA.experiments);
+
+  return withBottomNav(`
+  <h2 style="font-size:19px; margin-top:6px;">나의 HLEX 지도</h2>
+  <p class="lede">기록이 쌓일수록 나에게 맞는 패턴이 선명해져요.</p>
+
+  ${!hasData ? `
+    <div class="card-soft" style="margin-top:20px;">
+      <p style="font-size:13.5px; color:var(--ink-soft);">아직 기록이 없어요. 홈 화면에서 알아차린 행동을 기록해보세요.</p>
+    </div>
+  ` : `
+    <div class="stack gap-12" style="margin-top:18px;">
+      <div class="card">
+        <p style="font-size:12.5px; color:var(--ink-soft);">가장 자주 발생한 시간</p>
+        <p style="font-size:16px; font-weight:700; margin-top:4px;">${timeLabel || '아직 알 수 없어요'}</p>
+      </div>
+      <div class="card">
+        <p style="font-size:12.5px; color:var(--ink-soft);">가장 자주 나타난 상황</p>
+        <p style="font-size:16px; font-weight:700; margin-top:4px;">${topSituation ? `${topSituation[0]} (${topSituation[1]}회)` : '아직 알 수 없어요'}</p>
+      </div>
+      <div class="card">
+        <p style="font-size:12.5px; color:var(--ink-soft);">가장 자주 나타난 느낌</p>
+        <p style="font-size:16px; font-weight:700; margin-top:4px;">${topFeeling ? `${topFeeling[0]} (${topFeeling[1]}회)` : '아직 알 수 없어요'}</p>
+      </div>
+      <div class="card">
+        <p style="font-size:12.5px; color:var(--ink-soft);">가장 효과가 좋았던 방법</p>
+        <p style="font-size:16px; font-weight:700; margin-top:4px;">${best ? `${best.method}` : '아직 실험 기록이 없어요'}</p>
+        ${best ? `<p style="font-size:12px; color:var(--ink-soft); margin-top:4px;">평균 충동 감소 ${best.avg.toFixed(1)}점 · ${best.count}회 시도</p>` : ''}
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <p style="font-size:14px; font-weight:600;">최근 기록</p>
+    <div class="card" style="margin-top:10px;">
+      ${DATA.records.slice(-5).reverse().map(r => `
+        <div class="list-row">
+          <span class="k">${fmtTime(r.ts)}</span>
+          <span class="v">${r.behavior}${r.feeling ? ' · '+r.feeling : ''}</span>
+        </div>`).join('')}
+    </div>
+  `}
+  `, 'map');
+}
+
+/* ---- PREVENTION MODE ---- */
+function renderPreventionSetup(){
+  const sel = FLOW.prevSituation;
+  const dur = FLOW.prevDuration || 15;
+  return `
+  <div class="topnav"><div class="backbtn" onclick="go('home')">‹</div></div>
+  <h2 style="font-size:19px;">예방 모드를<br>시작해볼까요?</h2>
+  <p class="lede">위험 상황을 미리 준비하면, 행동이 시작되기 전에 알아차릴 수 있어요.</p>
+
+  <p style="font-size:13.5px; font-weight:600; margin-top:22px;">지금 어떤 상황인가요?</p>
+  <div class="row gap-10" style="margin-top:10px;">
+    ${SITUATIONS.filter(s=>s!=='잘 모르겠음').map(s => `<div class="chip ${sel===s?'selected':''}" onclick="setPrevSituation('${escAttr(s)}')">${s}</div>`).join('')}
+  </div>
+
+  <p style="font-size:13.5px; font-weight:600; margin-top:22px;">얼마 동안 집중할까요?</p>
+  <div class="row gap-10" style="margin-top:10px;">
+    ${[15,25,45].map(d => `<div class="chip ${dur===d?'selected':''}" onclick="setPrevDuration(${d})">${d}분</div>`).join('')}
+  </div>
+
+  <div class="card-soft" style="margin-top:24px;">
+    <p style="font-size:13px; color:var(--ink-soft);">준비물 알림</p>
+    <p style="font-size:13.5px; margin-top:4px;">립밤, 물, 피젯을 손 닿는 곳에 미리 준비해보세요.</p>
+  </div>
+
+  <div style="height:100px;"></div>
+  <div class="footer-fixed" style="position:absolute; bottom:0; left:0; right:0;">
+    <button class="btn btn-primary" ${sel?'':'disabled'} onclick="startPrevention()">집중 모드 시작</button>
+  </div>
+  `;
+}
+function setPrevSituation(s){ FLOW.prevSituation = s; render(); }
+function setPrevDuration(d){ FLOW.prevDuration = d; render(); }
+function startPrevention(){
+  FLOW.prevRemaining = (FLOW.prevDuration||15) * 60;
+  FLOW.prevStart = Date.now();
+  go('prevention-active');
+}
+function renderPreventionActive(){
+  const mm = String(Math.floor(FLOW.prevRemaining/60)).padStart(2,'0');
+  const ss = String(FLOW.prevRemaining%60).padStart(2,'0');
+  return `
+  <div style="text-align:center; padding-top:20px;">
+    <div class="badge">집중 모드</div>
+    <h2 style="font-size:19px; margin-top:10px;">${FLOW.prevSituation}</h2>
+  </div>
+  <div class="timerwrap">
+    <div class="timercircle">
+      <div class="timernum" id="prevtimer">${mm}:${ss}</div>
+      <div style="font-size:12px; color:var(--ink-soft);">남음</div>
+    </div>
+  </div>
+  <div class="quotebar">조용히 상태를 확인하고 있어요. 립밤, 물, 피젯을 준비해두셨나요?</div>
+  <div style="height:70px;"></div>
+  <div class="footer-fixed" style="position:absolute; bottom:0; left:0; right:0;">
+    <button class="btn btn-text" onclick="go('prevention-checkin')">지금 종료하기</button>
+  </div>
+  `;
+}
+function startPreventionTimer(){
+  TIMER_HANDLE = setInterval(()=>{
+    FLOW.prevRemaining -= 1;
+    const el = document.getElementById('prevtimer');
+    if(FLOW.prevRemaining <= 0){
+      clearInterval(TIMER_HANDLE);
+      go('prevention-checkin');
+      return;
+    }
+    if(el){
+      const mm = String(Math.floor(FLOW.prevRemaining/60)).padStart(2,'0');
+      const ss = String(FLOW.prevRemaining%60).padStart(2,'0');
+      el.textContent = `${mm}:${ss}`;
+    }
+  },1000);
+}
+function renderPreventionCheckin(){
+  return `
+  <h2 style="font-size:19px; margin-top:20px;">방금 손톱이나<br>입술을 만졌나요?</h2>
+  <p class="lede">있는 그대로 답해주셔도 괜찮아요. 이 응답이 다음 예방에 도움이 돼요.</p>
+  <div class="stack gap-10" style="margin-top:26px;">
+    <div class="chip block" onclick="finishPrevention('네')">네</div>
+    <div class="chip block" onclick="finishPrevention('아니요')">아니요</div>
+    <div class="chip block" onclick="finishPrevention('잘 모르겠어요')">잘 모르겠어요</div>
+  </div>
+  `;
+}
+async function finishPrevention(occurred){
+  DATA.preventionSessions.push({
+    id: 'p'+Date.now(), ts: Date.now(), situation: FLOW.prevSituation, occurred
+  });
+  await saveData();
+  showToast('집중 모드를 마쳤어요');
+  FLOW = {};
+  go('home');
+}
+
+/* ---- SETTINGS ---- */
+function renderSettings(){
+  return withBottomNav(`
+  <h2 style="font-size:19px; margin-top:6px;">설정</h2>
+
+  <p style="font-size:13px; font-weight:600; margin-top:20px; color:var(--ink-soft);">나의 정보</p>
+  <div class="card" style="margin-top:8px;">
+    <div class="list-row"><span class="k">대표 행동</span><span class="v">${DATA.primaryBehavior || '-'}</span></div>
+    <div class="list-row"><span class="k">이번 주 목표</span><span class="v">${DATA.goal || '-'}</span></div>
+    <div class="list-row"><span class="k">전체 기록 수</span><span class="v">${DATA.records.length}건</span></div>
+    <div class="list-row"><span class="k">전체 실험 수</span><span class="v">${DATA.experiments.length}건</span></div>
+  </div>
+
+  <p style="font-size:13px; font-weight:600; margin-top:22px; color:var(--ink-soft);">데이터</p>
+  <div class="stack gap-10" style="margin-top:8px;">
+    <button class="btn btn-ghost" onclick="exportData()">내 기록 내보내기 (JSON)</button>
+    <button class="btn btn-ghost" onclick="confirmReset()">전체 데이터 초기화</button>
+  </div>
+
+  <p style="font-size:13px; font-weight:600; margin-top:22px; color:var(--ink-soft);">안내</p>
+  <div class="card" style="margin-top:8px;">
+    <p style="font-size:13px; line-height:1.7; color:var(--ink-soft);">
+    알아챔은 사용자의 행동 인식과 자기 관리를 지원하는 헬스케어 도구입니다.
+    질환을 진단하거나 전문적인 의료서비스를 대체하지 않습니다.
+    </p>
+    <button class="privacy-link" style="margin-top:10px;" onclick="showPrivacyModal()">개인정보 처리 안내 자세히 보기</button>
+  </div>
+
+  <div class="card-soft" style="margin-top:14px;">
+    <p style="font-size:13px; font-weight:600;">전문가 상담이 필요한 경우</p>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin-top:6px; line-height:1.7;">
+    출혈이나 상처가 반복되거나, 감염이 의심되거나, 행동으로 인한 고통이 크다면
+    의료 전문가와 상담해보시길 권해요.
+    </p>
+  </div>
+  `, 'settings');
+}
+
+function exportData(){
+  const blob = new Blob([JSON.stringify(DATA, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'hlex-data.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast('내보내기 파일을 다운로드했어요');
+}
+
+function confirmReset(){
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal-sheet">
+      <h3 style="font-size:17px;">전체 데이터를 초기화할까요?</h3>
+      <p class="lede" style="margin-top:10px;">모든 기록, 실험, 예방 모드 이력이 삭제돼요. 이 작업은 되돌릴 수 없어요.</p>
+      <div class="stack gap-10" style="margin-top:20px;">
+        <button class="btn btn-clay" onclick="doReset()">초기화하기</button>
+        <button class="btn btn-text" onclick="this.closest('.modal-overlay').remove()">취소</button>
+      </div>
+    </div>`;
+  document.getElementById('screen').appendChild(overlay);
+}
+async function doReset(){
+  DATA = DEFAULT_DATA();
+  await saveData();
+  document.querySelector('.modal-overlay')?.remove();
+  showToast('초기화했어요');
+  go('onboard-intro');
+}
+
+function showPrivacyModal(){
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e)=>{ if(e.target===overlay) overlay.remove(); };
+  overlay.innerHTML = `
+    <div class="modal-sheet">
+      <h3 style="font-size:17px;">개인정보 처리 안내</h3>
+      <div class="stack gap-10" style="margin-top:14px; font-size:13px; color:var(--ink-soft); line-height:1.7;">
+        <p>· 꼭 필요한 정보만 수집하며, 회원가입 없이 체험할 수 있어요.</p>
+        <p>· 기록은 언제든 삭제하거나 전체 초기화할 수 있어요.</p>
+        <p>· 사진은 기본적으로 기기 내에만 저장되며, 카메라 영상은 저장하지 않아요.</p>
+        <p>· 원하실 때 내 기록을 파일로 내보낼 수 있어요.</p>
+      </div>
+      <button class="btn btn-text" style="margin-top:16px;" onclick="this.closest('.modal-overlay').remove()">닫기</button>
+    </div>`;
+  document.getElementById('screen').appendChild(overlay);
+}
+
+/* ---------------------------- BOOT ---------------------------- */
+(async function boot(){
+  await loadData();
+  ROUTE = DATA.onboarded ? 'home' : 'onboard-intro';
+  render();
+})();
+</script>
+</body>
+</html>
