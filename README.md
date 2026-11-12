@@ -31,8 +31,12 @@
 온보딩 — 개선할 행동 선택 → 주요 발생 상황 선택 → 현실적인 주간 목표 설정
 원터치 알아차림 기록 — 행동 선택 즉시 저장, 활동/느낌/강도는 선택 입력
 순간 개입 코치 — 방금 느낀 감정에 맞는 대체 행동을 즉시 제안
+기록 시 "언제 알아차렸나요?"(하는 도중/끝난 직후/한참 뒤)를 선택하면 시점에 맞는 안내 문구 제공
+알아차린 시점에 따라 흐름 분기: 하는 도중 → 바로 대체 행동 실험, 끝난 직후 → 충동이 남아 있는지 확인 후 실험 또는 계획, 한참 뒤 → 충동 줄이기 실험 대신 "다음에 이런 상황이면 이 방법" 계획(효과 통계에서 제외)
+"왜 이 방법인가요?" 버튼으로 각 대체 행동의 이론적 근거(HRT 경쟁 반응·이완, ComB 감각 영역 등) 확인
 대체 행동 실험실 — 실험 전/후 충동 강도를 기록하고 효과를 누적 비교
 나의 HLEX 지도 — 가장 잦은 시간대·상황·느낌, 가장 효과적인 방법을 자동 계산
+알아차린 시점 분포와, 기록이 쌓이면 "하는 도중 알아차린 비율" 변화 표시
 예방 모드 — 위험 시간대 전에 집중 모드를 시작하고 종료 후 체크인
 계정/데이터 관리 — 이메일 로그인·회원가입, 데이터 내보내기(JSON), 전체 초기화
 5. 기술 스택
@@ -59,8 +63,12 @@ create table records (
   id uuid primary key,
   user_id uuid references auth.users not null,
   ts timestamptz not null,
-  behavior text, activity text, feeling text, intensity int
+  behavior text, activity text, feeling text, intensity int,
+  aware_timing text
 );
+
+-- 이미 records 테이블을 만들었다면 이 한 줄만 추가로 실행:
+-- alter table records add column aware_timing text;
 
 create table experiments (
   id uuid primary key,
